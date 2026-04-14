@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Random;
 
 public class App {
@@ -37,51 +36,55 @@ public class App {
     }
 
     public static void main(String[] args) {
-        //testando o bolha
-        int tam = 20;
-        Integer[] vetor = gerarVetorObjetos(tam);
+        for(int i=1; i<5; i++){
+            int tam = 10 * i;
+            System.out.println("\n====================================="+
+                            "\nTESTES PARA UM VETOR DE TAMANHO " + tam);
 
-        BubbleSort<Integer> bolha = new BubbleSort<>();
+            //testando o bubble sort
+            Integer[] vetor = gerarVetorObjetos(tam);
 
-        Integer[] vetorOrdenado = bolha.ordenar(vetor);
+            BubbleSort<Integer> bolha = new BubbleSort<>();
 
-        System.out.println("\nVetor ordenado método Bolha:");
-        for(int numero : vetorOrdenado){
-            System.out.print(numero + " ");
+            Integer[] vetorOrdenado = bolha.ordenar(vetor);
+
+            System.out.println("\nVetor ordenado método Bolha:");
+            for(int numero : vetorOrdenado){
+                System.out.print(numero + " ");
+            }
+            System.out.println("\nComparações: " + bolha.getComparacoes());
+            System.out.println("Movimentações: " + bolha.getMovimentacoes());
+            System.out.println("Tempo de ordenação (ms): " + bolha.getTempoOrdenacao());
+
+
+            //testando o insertion sort
+            vetor = gerarVetorObjetos(tam);
+            InsertionSort<Integer> insertion = new InsertionSort<>();
+
+            vetorOrdenado = insertion.ordenar(vetor);
+
+            System.out.println("\nVetor ordenado método Insertion:");
+            for(int numero : vetorOrdenado){
+                System.out.print(numero + " ");
+            }
+            System.out.println("\nComparações: " + insertion.getComparacoes());
+            System.out.println("Movimentações: " + insertion.getMovimentacoes());
+            System.out.println("Tempo de ordenação (ms): " + insertion.getTempoOrdenacao());
+
+
+            //testando o selection sort
+            vetor = gerarVetorObjetos(tam);
+            SelectionSort<Integer> selection = new SelectionSort<>();
+
+            vetorOrdenado = selection.ordenar(vetor);
+
+            System.out.println("\nVetor ordenado método Selection:");
+            for(int numero : vetorOrdenado){
+                System.out.print(numero + " ");
+            }
+            System.out.println("\nComparações: " + selection.getComparacoes());
+            System.out.println("Movimentações: " + selection.getMovimentacoes());
+            System.out.println("Tempo de ordenação (ms): " + selection.getTempoOrdenacao());
         }
-        System.out.println("\nComparações: " + bolha.getComparacoes());
-        System.out.println("Movimentações: " + bolha.getMovimentacoes());
-        System.out.println("Tempo de ordenação (ms): " + bolha.getTempoOrdenacao());
-
-
-        //testando o insertion
-        vetor = gerarVetorObjetos(tam);
-        InsertionSort<Integer> insertion = new InsertionSort<>();
-
-        vetorOrdenado = insertion.ordenar(vetor);
-
-        System.out.println("\nVetor ordenado método Insertion:");
-        for(int numero : vetorOrdenado){
-            System.out.print(numero + " ");
-        }
-        System.out.println("\nComparações: " + insertion.getComparacoes());
-        System.out.println("Movimentações: " + insertion.getMovimentacoes());
-        System.out.println("Tempo de ordenação (ms): " + insertion.getTempoOrdenacao());
-
-
-        //testando o selection sort
-        vetor = gerarVetorObjetos(tam);
-        SelectionSort<Integer> selection = new SelectionSort<>();
-
-        vetorOrdenado = selection.ordenar(vetor);
-
-        System.out.println("\nVetor ordenado método Selection:");
-        for(int numero : vetorOrdenado){
-            System.out.print(numero + " ");
-        }
-        System.out.println("\nComparações: " + selection.getComparacoes());
-        System.out.println("Movimentações: " + selection.getMovimentacoes());
-        System.out.println("Tempo de ordenação (ms): " + selection.getTempoOrdenacao());
-
     }
 }
