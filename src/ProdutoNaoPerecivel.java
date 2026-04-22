@@ -36,6 +36,10 @@
         super(descricao, precoCusto, margemLucro);
     }
 
+    public ProdutoNaoPerecivel(){
+        super();
+    }
+
     /**
      * Construtor com margem de lucro padrão (20%). Causa exceção em caso de valores inválidos
      * @param desc Descrição do produto (mínimo 3 caracteres)

@@ -100,6 +100,8 @@ public abstract class Produto implements Comparable<Produto> {
         init(desc, precoCusto, margemLucro);
     }
 
+    protected Produto(){}
+
     /**
      * Construtor sem estoque mínimo - fica considerado como 0. 
      * Os valores default em caso de erro são:

@@ -1,4 +1,3 @@
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
@@ -82,7 +81,6 @@ public class AppOficina {
         System.out.println("4 - Embaralhar produtos");
         System.out.println("5 - Listar produtos");
         System.out.println("0 - Finalizar");
-       
         return lerNumero("Digite sua opção", Integer.class);
     }
 
@@ -93,7 +91,6 @@ public class AppOficina {
         System.out.println("3 - Seleção");
         System.out.println("4 - Mergesort");
         System.out.println("0 - Finalizar");
-       
         return lerNumero("Digite sua opção", Integer.class);
     }
 
@@ -128,23 +125,56 @@ public class AppOficina {
     }
 
 
-    static Produto buscaBinaria(Produto[] vet, int min, int max, int id){
+    static Produto buscaBinaria(Produto[] vet, int min, int max, Comparator<Produto> comparador, Produto template){
         
         int media = (min + max)/2;
 
-        if(vet[media].getIdProduto() == id){
+        if(comparador.compare(vet[media], template) == 0){
             return vet[media];
-        }else if(vet[media].getIdProduto() < id){
-            return buscaBinaria(vet, media, max, id);
+        }else if(comparador.compare(vet[media], template) < 0){
+            return buscaBinaria(vet, media, max, comparador, template);
         }else
-            return buscaBinaria(vet, min, media, id);
+            return buscaBinaria(vet, min, media, comparador, template);
     }
 
-    static Produto localizarProduto(Produto[] vetor) {
+    static Produto localizarProduto(Produto[] produtosPorCodigo, Produto[] produtosPorDescricao) {
+        Produto localizado = null;
+
+        //cria um produto vazio
+        ProdutoNaoPerecivel produtoTemplate = new ProdutoNaoPerecivel();
+
         cabecalho();
-        System.out.println("Localizando um produto");
-        int numero = lerNumero("Digite o identificador do produto", Integer.class);
-        Produto localizado = buscaBinaria(vetor, 0, produtos.length-1, numero);
+        int criterio = exibirMenuComparadores();
+        switch (criterio) {
+            case 1:{
+                comparador = new ComparadorPorDescricao();
+                break;
+            }case 2:{
+                comparador = new ComparadorPorCodigo();
+                break;
+            }default:
+                break;
+        }
+
+        switch (criterio) {
+            case 1:{
+                teclado = new Scanner(System.in);
+                System.out.println("Localizando um produto\nDigite o nome do produto");
+                String descricao = teclado.nextLine();
+                produtoTemplate.setDescricao(descricao);
+                localizado = buscaBinaria(produtosPorDescricao, 0, produtos.length-1, comparador, produtoTemplate);
+                break;
+            }case 2:{
+                teclado = new Scanner(System.in);
+                System.out.println("Localizando um produto");
+                int id = lerNumero("Digite o nome do produto", Integer.class);
+                produtoTemplate.setIdProduto(id);
+                localizado = buscaBinaria(produtosPorCodigo, 0, produtos.length-1, comparador, produtoTemplate);
+                break;
+            }default:
+                System.out.println("Entrada incorreta");
+                break;
+        }
 
         return localizado;
     }
@@ -248,7 +278,7 @@ public class AppOficina {
         do {
             opcao = exibirMenuPrincipal();
             switch (opcao) {
-                case 1 -> mostrarProduto(localizarProduto(produtosPorCodigo));
+                case 1 -> mostrarProduto(localizarProduto(produtosPorCodigo, produtosPorDescricao));
                 case 2 -> filtrarPorPrecoMaximo();
                 case 3 -> ordenarProdutos();
                 case 4 -> embaralharProdutos();
