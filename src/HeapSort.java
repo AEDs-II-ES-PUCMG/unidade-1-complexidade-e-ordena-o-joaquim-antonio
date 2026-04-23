@@ -1,95 +1,135 @@
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.time.Duration;
 
-public class HeapSort<T extends Comparable<T>> implements IOrdenador<T> {
+public class Heapsort<T extends Comparable<T>> implements IOrdenator<T> {
 
-    private long comparacoes;
-    private long movimentacoes;
-    private LocalDateTime inicio;
-    private LocalDateTime termino;
+	private T[] dadosOrdenados;
+	private Comparator<T> comparador;
+	private long comparacoes;
+	private long movimentacoes;
+	private long inicio;
+	private long termino;
+	
+	public Heapsort() {
+		
+		comparacoes = 0;
+		movimentacoes = 0;
+		setComparador(T::compareTo);
+	}
+	
+	public Heapsort(Comparator<T> comparador) {
+		
+		comparacoes = 0;
+		movimentacoes = 0;
+		setComparador(comparador);
+	}
 
-    @Override
-    public T[] ordenar(T[] dados) {
-        return ordenar(dados, T::compareTo);
-    }
+	@Override
+	public void setComparador(Comparator<T> comparador) {
+		this.comparador = comparador;
+	}
+	
+	@Override
+	public T[] ordenar (T[] dados) {
 
-    @Override
-    public T[] ordenar(T[] vetor, Comparator<T> comparador) {
+		dadosOrdenados = dados;
+		
+		comparacoes = 0;
+		movimentacoes = 0;
+		
+		// Criando outro vetor, com todos os elementos do vetor anterior reposicionados (uma posição a frente)
+		// de forma a ignorar a posição zero	    
+		@SuppressWarnings("unchecked")
+		T[] tmp = (T[]) new Comparable[dadosOrdenados.length + 1];
+		for(int i = 0; i < dadosOrdenados.length; i++) {
+			tmp[i+1] = dadosOrdenados[i];
+		}
+			      	
+		// Construção do heap
+		for(int tamHeap = (tmp.length - 1)/2; tamHeap >= 1; tamHeap--) {
+			restaura(tmp, tamHeap, tmp.length - 1);
+		}
+			    	
+		iniciar();
+			      	
+		//Ordenação propriamente dita
+		int tamHeap = tmp.length - 1;
+		swap(tmp, 1, tamHeap--);
+		while(tamHeap > 1) {
+			restaura(tmp, 1, tamHeap);
+			swap(tmp, 1, tamHeap--);
+		}
 
-        inicio = LocalDateTime.now();
+		//Alterar o vetor para voltar à posição zero
+		for(int i = 0; i < dadosOrdenados.length; i++) {
+			dadosOrdenados[i] = tmp[i+1];
+		}
+		
+		terminar();
+		
+		return  dadosOrdenados;
+	}
+	
+	private void restaura(T[] tmp, int i, int tamHeap) {
 
-        T[] tmp = Arrays.copyOf(vetor, vetor.length+1);
-        for (int i = 0; i < vetor.length; i++) {
-            tmp[i + 1] = vetor[i];
-        }
+	    int maior = i;
+        int filho = getMaiorFilho(tmp, i, tamHeap);
 
-        for (int tamHeap = (tmp.length - 1) / 2; tamHeap >= 1; tamHeap--) {
-            restaura(tmp, tamHeap, tmp.length - 1, comparador);
-        }
+	    if(comparador.compare(tmp[i], tmp[filho]) < 0) {
+		    maior = filho;
+	    }
+	    if (maior != i) {
+	    	swap(tmp, i, maior);
+	        if (maior <= tamHeap/2) {
+	        	restaura(tmp, maior, tamHeap);
+	        }
+	    }
+	}
 
-        int tamHeap = tmp.length - 1;
-        trocar(tmp, 1, tamHeap--);
-        while (tamHeap > 1) {
-            restaura(tmp, 1, tamHeap, comparador);
-            trocar(tmp, 1, tamHeap--);
-        }
+	private int getMaiorFilho(T[] tmp, int i, int tamHeap) {
 
-        for (int i = 0; i < vetor.length; i++) {
-            vetor[i] = tmp[i + 1];
-        }
+		int filho;
 
-        termino = LocalDateTime.now();
-
-        return vetor;
-    }
-
-    private void restaura(T[] vetor, int i, int tamHeap, Comparator<T> comparador) {
-        int maior = i;
-        int filho = getMaiorFilho(vetor, i, tamHeap, comparador);
-
-        // Se o maior filho supera o nó atual, ele passa a ser o candidato à troca
-        if (comparador.compare(vetor[filho], vetor[i]) > 0) {
-            maior = filho;
-        }
-
-        if (maior != i) {
-            trocar(vetor, i, maior);
-            // Desce recursivamente apenas se o nó que desceu ainda tem filhos
-            if (maior <= tamHeap / 2) {
-                restaura(vetor, maior, tamHeap, comparador);
-            }
-        }
-    }
-
-    private int getMaiorFilho(T[] vetor, int i, int tamHeap, Comparator<T> comparador) {
-        int filho;
-        if (2 * i == tamHeap || comparador.compare(vetor[2 * i], vetor[2 * i + 1]) > 0) {
-            filho = 2 * i; // filho esquerdo
-        } else {
-            filho = 2 * i + 1; // filho direito
-        }
-        return filho;
-    }
-
-    private void trocar(T[] vetor, int i, int j) {
-        movimentacoes++;
-
-        T temp = vetor[i];
-        vetor[i] = vetor[j];
-        vetor[j] = temp;
-    }
-
-    public long getComparacoes() {
-        return comparacoes;
-    }
-
-    public long getMovimentacoes() {
-        return movimentacoes;
-    }
-
-    public double getTempoOrdenacao() {
-        return Duration.between(inicio, termino).toMillis();
-    }
+		if (2*i == tamHeap || (comparador.compare(tmp[2*i], tmp[2*i+1]) > 0)) {
+        	filho = 2*i;
+      	} else {
+        	filho = 2*i + 1;
+      	}
+      	return filho;
+	}
+	
+	private void swap(T[] dados, int i, int j) {
+	      
+		movimentacoes++;
+		
+		T temp = dados[i];
+	    dados[i] = dados[j];
+	    dados[j] = temp;
+	}
+	
+	@Override
+	public long getComparacoes() {
+		return comparacoes;
+	}
+	
+	@Override
+	public long getMovimentacoes() {
+		return movimentacoes;
+	}
+	
+	private void iniciar() {
+		inicio = System.nanoTime();
+	}
+	
+	private void terminar() {
+		termino = System.nanoTime();
+	}
+	
+	@Override
+	public double getTempoOrdenacao() {
+		
+		double tempoTotal;
+		
+	    tempoTotal = (termino - inicio) / 1_000_000;
+	    return tempoTotal;
+	}
 }
