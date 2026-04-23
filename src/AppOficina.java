@@ -6,31 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
 
-/**
- * MIT License
- *
- * Copyright(c) 2022-25 João Caram <caram@pucminas.br>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 public class AppOficina {
 
     static final int MAX_PEDIDOS = 100;
@@ -42,8 +17,6 @@ public class AppOficina {
 
     // #region utilidades
     static Scanner teclado;
-
-    
 
     static <T extends Number> T lerNumero(String mensagem, Class<T> classe) {
         System.out.print(mensagem + ": ");
@@ -71,7 +44,6 @@ public class AppOficina {
         limparTela();
         System.out.println("XULAMBS COMÉRCIO DE COISINHAS v0.2\n================");
     }
-    
 
     static int exibirMenuPrincipal() {
         cabecalho();
@@ -90,6 +62,8 @@ public class AppOficina {
         System.out.println("2 - Inserção");
         System.out.println("3 - Seleção");
         System.out.println("4 - Mergesort");
+        System.out.println("5 - Heapsort");
+        System.out.println("6 - Quicksort");
         System.out.println("0 - Finalizar");
         return lerNumero("Digite sua opção", Integer.class);
     }
@@ -98,18 +72,18 @@ public class AppOficina {
         cabecalho();
         System.out.println("1 - Padrão");
         System.out.println("2 - Por código");
-        
+
         return lerNumero("Digite sua opção", Integer.class);
     }
 
     // #endregion
-    static Produto[] carregarProdutos(String nomeArquivo){
+    static Produto[] carregarProdutos(String nomeArquivo) {
         Scanner dados;
         Produto[] dadosCarregados;
-        try{
+        try {
             dados = new Scanner(new File(nomeArquivo));
             int tamanho = Integer.parseInt(dados.nextLine());
-            
+
             dadosCarregados = new Produto[tamanho];
             while (dados.hasNextLine()) {
                 Produto novoProduto = Produto.criarDoTexto(dados.nextLine());
@@ -117,61 +91,64 @@ public class AppOficina {
                 quantProdutos++;
             }
             dados.close();
-        }catch (FileNotFoundException fex){
+        } catch (FileNotFoundException fex) {
             System.out.println("Arquivo não encontrado. Produtos não carregados");
             dadosCarregados = null;
         }
         return dadosCarregados;
     }
 
+    static Produto buscaBinaria(Produto[] vet, int min, int max, Comparator<Produto> comparador, Produto template) {
 
-    static Produto buscaBinaria(Produto[] vet, int min, int max, Comparator<Produto> comparador, Produto template){
-        
-        int media = (min + max)/2;
+        int media = (min + max) / 2;
 
-        if(comparador.compare(vet[media], template) == 0){
+        if (comparador.compare(vet[media], template) == 0) {
             return vet[media];
-        }else if(comparador.compare(vet[media], template) < 0){
+        } else if (comparador.compare(vet[media], template) < 0) {
             return buscaBinaria(vet, media, max, comparador, template);
-        }else
+        } else
             return buscaBinaria(vet, min, media, comparador, template);
     }
 
     static Produto localizarProduto(Produto[] produtosPorCodigo, Produto[] produtosPorDescricao) {
         Produto localizado = null;
 
-        //cria um produto vazio
+        // cria um produto vazio
         ProdutoNaoPerecivel produtoTemplate = new ProdutoNaoPerecivel();
 
         cabecalho();
         int criterio = exibirMenuComparadores();
         switch (criterio) {
-            case 1:{
+            case 1: {
                 comparador = new ComparadorPorDescricao();
                 break;
-            }case 2:{
+            }
+            case 2: {
                 comparador = new ComparadorPorCodigo();
                 break;
-            }default:
+            }
+            default:
                 break;
         }
 
         switch (criterio) {
-            case 1:{
+            case 1: {
                 teclado = new Scanner(System.in);
                 System.out.println("Localizando um produto\nDigite o nome do produto");
                 String descricao = teclado.nextLine();
                 produtoTemplate.setDescricao(descricao);
-                localizado = buscaBinaria(produtosPorDescricao, 0, produtos.length-1, comparador, produtoTemplate);
+                localizado = buscaBinaria(produtosPorDescricao, 0, produtos.length - 1, comparador, produtoTemplate);
                 break;
-            }case 2:{
+            }
+            case 2: {
                 teclado = new Scanner(System.in);
                 System.out.println("Localizando um produto");
                 int id = lerNumero("Digite o nome do produto", Integer.class);
                 produtoTemplate.setIdProduto(id);
-                localizado = buscaBinaria(produtosPorCodigo, 0, produtos.length-1, comparador, produtoTemplate);
+                localizado = buscaBinaria(produtosPorCodigo, 0, produtos.length - 1, comparador, produtoTemplate);
                 break;
-            }default:
+            }
+            default:
                 System.out.println("Entrada incorreta");
                 break;
         }
@@ -182,29 +159,29 @@ public class AppOficina {
     private static void mostrarProduto(Produto produto) {
         cabecalho();
         String mensagem = "Dados inválidos";
-        
-        if(produto!=null){
-            mensagem = String.format("Dados do produto:\n%s", produto);            
+
+        if (produto != null) {
+            mensagem = String.format("Dados do produto:\n%s", produto);
         }
-        
+
         System.out.println(mensagem);
     }
 
-    private static void filtrarPorPrecoMaximo(){
+    private static void filtrarPorPrecoMaximo() {
         cabecalho();
         System.out.println("Filtrando por valor máximo:");
         double valor = lerNumero("valor", Double.class);
         StringBuilder relatorio = new StringBuilder();
         for (int i = 0; i < quantProdutos; i++) {
-            if(produtos[i].valorDeVenda() < valor)
-            relatorio.append(produtos[i]+"\n");
+            if (produtos[i].valorDeVenda() < valor)
+                relatorio.append(produtos[i] + "\n");
         }
         System.out.println(relatorio.toString());
     }
 
-    static void ordenarProdutos(){
+    static void ordenarProdutos() {
         cabecalho();
-        
+
         int criterio = exibirMenuComparadores();
         int opcao = exibirMenuOrdenadores();
 
@@ -219,24 +196,32 @@ public class AppOficina {
                 comparador = new ComparadorPorCodigo();
             default:
                 break;
-        }  
+        }
 
         switch (opcao) {
-            case 1:{
+            case 1: {
                 ordenador = new Bubblesort<>();
                 produtos = ordenador.ordenar(produtos, comparador);
                 break;
             }
-            case 2:{
+            case 2: {
                 ordenador = new InsertSort<>();
                 produtos = ordenador.ordenar(produtos, comparador);
             }
-            case 3:{
+            case 3: {
                 ordenador = new SelectionSort<>();
                 produtos = ordenador.ordenar(produtos, comparador);
             }
-            case 4:{
+            case 4: {
                 ordenador = new Mergesort<>();
+                produtos = ordenador.ordenar(produtos, comparador);
+            }
+            case 5: {
+                ordenador = new HeapSort<>();
+                produtos = ordenador.ordenar(produtos, comparador);
+            }
+            case 6: {
+                ordenador = new QuickSort<>();
                 produtos = ordenador.ordenar(produtos, comparador);
             }
             default:
@@ -244,19 +229,19 @@ public class AppOficina {
         }
     }
 
-    static void embaralharProdutos(){
+    static void embaralharProdutos() {
         Collections.shuffle(Arrays.asList(produtos));
     }
 
-    static void verificarSubstituicao(Produto[] dadosOriginais, Produto[] copiaDados){
+    static void verificarSubstituicao(Produto[] dadosOriginais, Produto[] copiaDados) {
         cabecalho();
         System.out.print("Deseja sobrescrever os dados originais pelos ordenados (S/N)?");
         String resposta = teclado.nextLine().toUpperCase();
-        if(resposta.equals("S"))
+        if (resposta.equals("S"))
             dadosOriginais = Arrays.copyOf(copiaDados, copiaDados.length);
     }
 
-    static void listarProdutos(){
+    static void listarProdutos() {
         cabecalho();
         for (int i = 0; i < quantProdutos; i++) {
             System.out.println(produtos[i]);
@@ -265,7 +250,7 @@ public class AppOficina {
 
     public static void main(String[] args) {
         teclado = new Scanner(System.in);
-        
+
         produtos = carregarProdutos(nomeArquivoDados);
         embaralharProdutos();
 
@@ -274,7 +259,7 @@ public class AppOficina {
         Produto[] produtosPorCodigo = ordenador.ordenar(produtos, comparador = new ComparadorPorCodigo());
 
         int opcao = -1;
-        
+
         do {
             opcao = exibirMenuPrincipal();
             switch (opcao) {
@@ -286,7 +271,7 @@ public class AppOficina {
                 case 0 -> System.out.println("Obrigado pela preferência");
             }
             pausa();
-        }while (opcao != 0);
+        } while (opcao != 0);
         teclado.close();
-    }                        
+    }
 }
